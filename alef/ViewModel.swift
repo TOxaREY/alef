@@ -40,6 +40,7 @@ class ViewModel {
         cell.childAgeTextFieldOutlet(vc: vc)
         cell.childNameTextField.text = child[indexPath.row].name
         cell.childAgeTextField.text = child[indexPath.row].age
+        cell.observerEnableDisableButton()
         return cell
     }
 

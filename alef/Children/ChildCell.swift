@@ -16,6 +16,7 @@ class ChildCell: UITableViewCell, UITextFieldDelegate {
     @IBOutlet weak var childNameTextField: UITextField!
     @IBOutlet weak var childAgeLabel: UILabel!
     @IBOutlet weak var childAgeTextField: UITextField!
+    @IBOutlet weak var childDeleteButton: UIButton!
     @IBAction func childDeleteButton(_ sender: Any) {
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "childDelete"), object: nil, userInfo: ["index": childIndex])
     }
@@ -47,12 +48,30 @@ class ChildCell: UITableViewCell, UITextFieldDelegate {
         return true
     }
     
+    @objc func enableChildDeleteButton() {
+        childDeleteButton.isEnabled = true
+    }
+    
     func textFieldDidEndEditing(_ textField: UITextField, reason: UITextField.DidEndEditingReason) {
         if textField == childNameTextField {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "childAddName"), object: nil, userInfo: ["index": childIndex, "name": textField.text ?? ""])
         } else if textField == childAgeTextField {
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: "childAddAge"), object: nil, userInfo: ["index": childIndex, "age": textField.text ?? ""])
         }
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "enableChildDeleteButton"), object: nil)
+    }
+    
+    @objc func disableChildDeleteButton() {
+        childDeleteButton.isEnabled = false
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "disableChildDeleteButton"), object: nil)
+    }
+    
+    func observerEnableDisableButton() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.enableChildDeleteButton), name: NSNotification.Name(rawValue: "enableChildDeleteButton"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.disableChildDeleteButton), name: NSNotification.Name(rawValue: "disableChildDeleteButton"), object: nil)
     }
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
